@@ -33,8 +33,8 @@ pipeline {
 
                 dir('application-code') {
 
-                    git branch: "${APP_BRANCH}",
-                    url: "${APP_GIT_URL}"
+                    git branch: "${env.APP_BRANCH}",
+                    url: "${env.APP_GIT_URL}"
                 }
             }
         }
@@ -55,7 +55,7 @@ pipeline {
             steps {
 
                 sh """
-                cp application-code/target/*.war ${DEPLOY_PATH}
+                cp application-code/target/*.war ${env.DEPLOY_PATH}
                 """
             }
         }
