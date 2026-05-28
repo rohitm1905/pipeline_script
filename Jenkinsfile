@@ -1,13 +1,11 @@
+def APP_GIT_URL = ""
+def APP_BRANCH = ""
+def APP_NAME = ""
+def DEPLOY_PATH = ""
+
 pipeline {
 
     agent any
-
-    environment {
-        APP_GIT_URL = ''
-        APP_BRANCH = ''
-        APP_NAME = ''
-        DEPLOY_PATH = ''
-    }
 
     stages {
 
@@ -27,15 +25,15 @@ pipeline {
 
                     echo "Properties Loaded: ${props}"
 
-                    env.APP_GIT_URL = props['APP_GIT_URL']
-                    env.APP_BRANCH = props['APP_BRANCH']
-                    env.APP_NAME = props['APP_NAME']
-                    env.DEPLOY_PATH = props['DEPLOY_PATH']
+                    APP_GIT_URL = props['APP_GIT_URL']
+                    APP_BRANCH = props['APP_BRANCH']
+                    APP_NAME = props['APP_NAME']
+                    DEPLOY_PATH = props['DEPLOY_PATH']
 
-                    echo "APP_GIT_URL = ${env.APP_GIT_URL}"
-                    echo "APP_BRANCH = ${env.APP_BRANCH}"
-                    echo "APP_NAME = ${env.APP_NAME}"
-                    echo "DEPLOY_PATH = ${env.DEPLOY_PATH}"
+                    echo "APP_GIT_URL = ${APP_GIT_URL}"
+                    echo "APP_BRANCH = ${APP_BRANCH}"
+                    echo "APP_NAME = ${APP_NAME}"
+                    echo "DEPLOY_PATH = ${DEPLOY_PATH}"
                 }
             }
         }
@@ -46,8 +44,8 @@ pipeline {
 
                 dir('application-code') {
 
-                    git branch: "${env.APP_BRANCH}",
-                    url: "${env.APP_GIT_URL}"
+                    git branch: "${APP_BRANCH}",
+                    url: "${APP_GIT_URL}"
                 }
             }
         }
@@ -68,7 +66,7 @@ pipeline {
             steps {
 
                 sh """
-                cp application-code/target/*.war ${env.DEPLOY_PATH}
+                cp application-code/target/*.war ${DEPLOY_PATH}
                 """
             }
         }
@@ -78,7 +76,7 @@ pipeline {
             steps {
 
                 sh """
-                ls -lrt ${env.DEPLOY_PATH}
+                ls -lrt ${DEPLOY_PATH}
                 """
             }
         }
