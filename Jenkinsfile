@@ -7,6 +7,10 @@ pipeline {
 
     agent any
 
+   tools {
+        maven 'MVN'
+    }
+
     stages {
 
         stage('Load ENV File') {
