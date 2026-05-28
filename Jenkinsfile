@@ -4,8 +4,8 @@ pipeline {
 
     environment {
         APP_GIT_URL = ''
-        APP_BRANCH  = ''
-        APP_NAME    = ''
+        APP_BRANCH = ''
+        APP_NAME = ''
         DEPLOY_PATH = ''
     }
 
@@ -15,18 +15,26 @@ pipeline {
 
             steps {
 
+                echo 'Checking Workspace'
+
+                sh 'pwd'
+                sh 'ls -lrt'
+                sh 'ls -lrt env'
+
                 script {
 
                     def props = readProperties file: 'env/dev.env'
 
-                    env.APP_GIT_URL = "${props['APP_GIT_URL']}"
-                    env.APP_BRANCH  = "${props['APP_BRANCH']}"
-                    env.APP_NAME    = "${props['APP_NAME']}"
-                    env.DEPLOY_PATH = "${props['DEPLOY_PATH']}"
+                    echo "Properties Loaded: ${props}"
+
+                    env.APP_GIT_URL = props['APP_GIT_URL']
+                    env.APP_BRANCH = props['APP_BRANCH']
+                    env.APP_NAME = props['APP_NAME']
+                    env.DEPLOY_PATH = props['DEPLOY_PATH']
 
                     echo "APP_GIT_URL = ${env.APP_GIT_URL}"
-                    echo "APP_BRANCH  = ${env.APP_BRANCH}"
-                    echo "APP_NAME    = ${env.APP_NAME}"
+                    echo "APP_BRANCH = ${env.APP_BRANCH}"
+                    echo "APP_NAME = ${env.APP_NAME}"
                     echo "DEPLOY_PATH = ${env.DEPLOY_PATH}"
                 }
             }
@@ -80,7 +88,7 @@ pipeline {
 
         success {
 
-            echo 'Application Build and Deployment Successful'
+            echo 'Pipeline Completed Successfully'
         }
 
         failure {
