@@ -5,9 +5,7 @@ def DEPLOY_PATH = ""
 
 pipeline {
 
-    agent {
-    label 'eks-node'
-}
+    agent any
 
    tools {
         maven 'MVN'
