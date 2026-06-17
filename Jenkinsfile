@@ -42,6 +42,7 @@ pipeline {
                     projects.each { proj ->
                         dir(proj) {
                             echo "Building project ${proj}"
+                            sh 'ls -lrt'
                             sh 'mvn clean package'
                         }
                     }
