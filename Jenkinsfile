@@ -27,12 +27,17 @@ pipeline {
                     APP_BRANCH = props['APP_BRANCH']
                     DEPLOY_PATH = props['DEPLOY_PATH']
                     PROJECT_LIST = props['PROJECT_LIST'] ?: ''
+                    SONAR_HOST_URL = props['SONAR_HOST_URL'] ?: ''
+                    SONAR_TOKEN = props['SONAR_TOKEN'] ?: ''
+                    SONAR_PROJECT_PREFIX = props['SONAR_PROJECT_PREFIX'] ?: ''
                     BUILD_DIR = "build-${env.BUILD_NUMBER}"
 
                     echo "APP_GIT_URL = ${APP_GIT_URL}"
                     echo "APP_BRANCH = ${APP_BRANCH}"
                     echo "DEPLOY_PATH = ${DEPLOY_PATH}"
                     echo "PROJECT_LIST = ${PROJECT_LIST}"
+                    echo "SONAR_HOST_URL = ${SONAR_HOST_URL ? '****' : ''}"
+                    echo "SONAR_PROJECT_PREFIX = ${SONAR_PROJECT_PREFIX}"
                     echo "BUILD_DIR = ${BUILD_DIR}"
                 }
             }
@@ -70,6 +75,15 @@ pipeline {
                             sh 'pwd'
                             sh 'ls -lart'
                             sh 'mvn clean package'
+
+                            // Run Sonar scan if configured
+                            def sonarKey = SONAR_PROJECT_PREFIX?.trim() ? "${SONAR_PROJECT_PREFIX}-${proj}" : proj
+                            if (SONAR_HOST_URL?.trim() && SONAR_TOKEN?.trim()) {
+                                echo "Running Sonar scan for ${proj} (project key: ${sonarKey})"
+                                sh "mvn sonar:sonar -Dsonar.projectKey=${sonarKey} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                            } else {
+                                echo "Sonar variables not set; skipping Sonar scan for ${proj}"
+                            }
                         }
                     }
                 }
