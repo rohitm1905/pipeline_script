@@ -77,7 +77,7 @@ pipeline {
                             sh 'mvn clean package'
 
                             // Run Sonar scan if configured
-                            def sonarKey = SONAR_PROJECT_PREFIX?.trim() ? "${SONAR_PROJECT_PREFIX}-${proj}" : proj
+                            def sonarKey = SONAR_PROJECT_PREFIX?.trim() ? "${SONAR_PROJECT_PREFIX}" : proj
                             if (SONAR_HOST_URL?.trim() && SONAR_TOKEN?.trim()) {
                                 echo "Running Sonar scan for ${proj} (project key: ${sonarKey})"
                                 sh "mvn sonar:sonar -Dsonar.projectKey=${sonarKey} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
