@@ -32,22 +32,10 @@ pipeline {
         stage('Build Projects') {
             steps {
                 script {
-                    def projects = []
-                    if (PROJECT_LIST?.trim()) {
-                        projects = PROJECT_LIST.tokenize(',').collect { it.trim() }.findAll { it }
-                    } else {
-                        def projectOutput = sh(script: """
-                            find . -maxdepth 3 -name pom.xml \
-                                | grep -v '^./pom.xml$' \
-                                | sed 's#^./##' \
-                                | sed 's#/pom.xml$##' \
-                                | sort -u
-                        """, returnStdout: true).trim()
-                        projects = projectOutput.tokenize('\n').findAll { it }
-                    }
+                    def projects = PROJECT_LIST.tokenize(',').collect { it.trim() }.findAll { it }
 
                     if (!projects) {
-                        error 'No Maven projects found to build. Define PROJECT_LIST in env/dev.env or ensure subfolders contain pom.xml.'
+                        error 'PROJECT_LIST is empty. Set PROJECT_LIST in env/dev.env to comma-separated project folder names.'
                     }
 
                     echo "Projects to build: ${projects}"
@@ -64,13 +52,7 @@ pipeline {
         stage('Deploy WARs') {
             steps {
                 script {
-                    def projects = PROJECT_LIST?.trim() ? PROJECT_LIST.tokenize(',').collect { it.trim() }.findAll { it } : sh(script: """
-                            find . -maxdepth 3 -name pom.xml \
-                                | grep -v '^./pom.xml$' \
-                                | sed 's#^./##' \
-                                | sed 's#/pom.xml$##' \
-                                | sort -u
-                        """, returnStdout: true).trim().tokenize('\n').findAll { it }
+                    def projects = PROJECT_LIST.tokenize(',').collect { it.trim() }.findAll { it }
 
                     projects.each { proj ->
                         echo "Deploying WAR for ${proj}"
