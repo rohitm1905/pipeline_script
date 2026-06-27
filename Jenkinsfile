@@ -1,3 +1,4 @@
+```groovy
 def APP_GIT_URL = ''
 def APP_BRANCH = ''
 def PROJECT_LIST = ''
@@ -99,6 +100,7 @@ pipeline {
                             sh 'mvn clean package'
 
                             echo "Build Completed Successfully for ${proj}"
+
                         }
 
                     }
@@ -110,21 +112,73 @@ pipeline {
         }
 
         stage('Docker Build') {
+
             steps {
+
                 script {
-                    def projects = PROJECT_LIST.tokenize(',').collect { it.trim() }.findAll { it }
+
+                    def projects = PROJECT_LIST.tokenize(',')
+                                               .collect { it.trim() }
+                                               .findAll { it }
+
                     if (!projects) {
-                        echo 'No projects to build Docker images for.'
+
+                        echo 'No projects found for Docker build.'
+
                     } else {
+
                         projects.each { proj ->
+
                             dir("${BUILD_DIR}/${proj}") {
-                                echo "Building Docker image for ${proj}"
-                                sh "docker build -t ${proj}:${env.BUILD_NUMBER}-${env.BUILD_ID}-${proj} ."
+
+                                echo "======================================"
+                                echo "Building Docker Image : ${proj}"
+                                echo "======================================"
+
+                                sh """
+                                    docker build \
+                                    -t ${proj}:${env.BUILD_NUMBER} .
+                                """
+
                             }
+
                         }
+
                     }
+
                 }
+
             }
+
+        }
+
+        stage('Verify Kubernetes Connectivity') {
+
+            steps {
+
+                script {
+
+                    echo "======================================"
+                    echo "Verifying Kubernetes Connectivity"
+                    echo "======================================"
+
+                    sh '''
+                        echo "Current Context:"
+                        kubectl config current-context
+
+                        echo ""
+                        echo "Cluster Information:"
+                        kubectl cluster-info
+
+                        echo ""
+                        echo "Worker Nodes:"
+                        kubectl get nodes -o wide
+                    '''
+
+                }
+
+            }
+
         }
 
     }
@@ -150,3 +204,4 @@ pipeline {
     }
 
 }
+```
