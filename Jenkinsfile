@@ -1,4 +1,4 @@
-```groovy
+
 def APP_GIT_URL = ''
 def APP_BRANCH = ''
 def PROJECT_LIST = ''
