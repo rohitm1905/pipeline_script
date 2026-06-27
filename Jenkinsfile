@@ -109,6 +109,24 @@ pipeline {
 
         }
 
+        stage('Docker Build') {
+            steps {
+                script {
+                    def projects = PROJECT_LIST.tokenize(',').collect { it.trim() }.findAll { it }
+                    if (!projects) {
+                        echo 'No projects to build Docker images for.'
+                    } else {
+                        projects.each { proj ->
+                            dir("${BUILD_DIR}/${proj}") {
+                                echo "Building Docker image for ${proj}"
+                                sh "docker build -t ${proj}:${env.BUILD_NUMBER}-${env.BUILD_ID}-${proj} ."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     post {
