@@ -59,7 +59,7 @@ pipeline {
             steps {
 
                 dir('application-code') {
-
+                    sh 'pwd'
                     sh 'mvn clean package'
                 }
             }
