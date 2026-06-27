@@ -1,4 +1,3 @@
-
 def APP_GIT_URL = ''
 def APP_BRANCH = ''
 def PROJECT_LIST = ''
@@ -77,8 +76,8 @@ pipeline {
                 script {
 
                     def projects = PROJECT_LIST.tokenize(',')
-                                               .collect { it.trim() }
-                                               .findAll { it }
+                            .collect { it.trim() }
+                            .findAll { it }
 
                     if (!projects) {
                         error 'PROJECT_LIST is empty. Set PROJECT_LIST in env/dev.env.'
@@ -100,15 +99,10 @@ pipeline {
                             sh 'mvn clean package'
 
                             echo "Build Completed Successfully for ${proj}"
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         stage('Docker Build') {
@@ -118,29 +112,26 @@ pipeline {
                 script {
 
                     def projects = PROJECT_LIST.tokenize(',')
-                                               .collect { it.trim() }
-                                               .findAll { it }
+                            .collect { it.trim() }
+                            .findAll { it }
 
                     if (!projects) {
 
-                        echo 'No projects found for Docker build.'
+                        error 'No projects found for Docker build.'
 
-                    } else {
+                    }
 
-                        projects.each { proj ->
+                    projects.each { proj ->
 
-                            dir("${BUILD_DIR}/${proj}") {
+                        dir("${BUILD_DIR}/${proj}") {
 
-                                echo "======================================"
-                                echo "Building Docker Image : ${proj}"
-                                echo "======================================"
+                            echo "======================================"
+                            echo "Building Docker Image : ${proj}"
+                            echo "======================================"
 
-                                sh """
-                                    docker build \
-                                    -t ${proj}:${env.BUILD_NUMBER} .
-                                """
-
-                            }
+                            sh """
+                                docker build -t ${proj}:${env.BUILD_NUMBER} .
+                            """
 
                         }
 
@@ -156,29 +147,23 @@ pipeline {
 
             steps {
 
-                script {
+                echo "======================================"
+                echo "Verifying Kubernetes Connectivity"
+                echo "======================================"
 
-                    echo "======================================"
-                    echo "Verifying Kubernetes Connectivity"
-                    echo "======================================"
+                sh '''
+                    echo "Current Context"
+                    kubectl config current-context
 
-                    sh '''
-                        echo "Current Context:"
-                        kubectl config current-context
+                    echo ""
+                    echo "Cluster Information"
+                    kubectl cluster-info
 
-                        echo ""
-                        echo "Cluster Information:"
-                        kubectl cluster-info
-
-                        echo ""
-                        echo "Worker Nodes:"
-                        kubectl get nodes -o wide
-                    '''
-
-                }
-
+                    echo ""
+                    echo "Nodes"
+                    kubectl get nodes -o wide
+                '''
             }
-
         }
 
     }
@@ -204,4 +189,3 @@ pipeline {
     }
 
 }
-```
